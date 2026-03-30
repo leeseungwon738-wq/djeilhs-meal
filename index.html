@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>대전제일고 급식 조회</title>
+</head>
+
+<body>
+
+<h1>대전제일고 급식 조회</h1>
+
+<input type="text" id="date" placeholder="YYYYMMDD 입력">
+<button onclick="getMeal()">조회</button>
+
+<pre id="result"></pre>
+
+<script>
+
+function getMeal(){
+
+const date = document.getElementById("date").value;
+
+const API_KEY = "7a02b3d9429841e9bccb61a0f51b7a16";
+const ATPT_OFCDC_SC_CODE = "G10";
+const SD_SCHUL_CODE = "7430242";
+
+const url =
+`https://open.neis.go.kr/hub/mealServiceDietInfo?KEY=${API_KEY}&Type=json&ATPT_OFCDC_SC_CODE=${ATPT_OFCDC_SC_CODE}&SD_SCHUL_CODE=${SD_SCHUL_CODE}&MLSV_YMD=${date}`;
+
+fetch(url)
+.then(res => res.json())
+.then(data => {
+
+try{
+
+let meal = data.mealServiceDietInfo[1].row[0].DDISH_NM;
+
+meal = meal.replace(/<br\/>/g,"\n");
+
+document.getElementById("result").textContent =
+date + " 급식 메뉴\n\n" + meal;
+
+}catch{
+
+document.getElementById("result").textContent =
+"해당 날짜의 급식 정보가 없습니다.";
+
+}
+
+})
+.catch(()=>{
+document.getElementById("result").textContent =
+"API 요청 실패";
+})
+
+}
+
+</script>
+
+</body>
+</html>
