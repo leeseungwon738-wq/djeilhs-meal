@@ -20,6 +20,12 @@ function getMeal(){
 
 const date = document.getElementById("date").value;
 
+if(!/^\d{8}$/.test(date)){
+document.getElementById("result").textContent =
+"날짜는 YYYY(년)MM(월)DD(일) 형식으로 입력해야 합니다.";
+return;
+}
+  
 const API_KEY = "7a02b3d9429841e9bccb61a0f51b7a16";
 const ATPT_OFCDC_SC_CODE = "G10";
 const SD_SCHUL_CODE = "7430242";
