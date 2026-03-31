@@ -203,6 +203,8 @@ window.deleteComment=async function(id,password){
 
 const input=prompt("비밀번호 입력");
 
+if(input === null) return;
+
 if(input!==password){
 alert("비밀번호 틀림");
 return;
@@ -231,7 +233,7 @@ loadComments();
 
 document.addEventListener("keydown", function(e){
 
-if(e.ctrlKey && e.shiftKey && e.key === "A"){
+if(e.ctrlKey && e.shiftKey && e.key === "S"){
 
 const pw = prompt("관리자 비밀번호 입력");
 
