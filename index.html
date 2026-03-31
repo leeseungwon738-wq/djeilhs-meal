@@ -201,9 +201,9 @@ loadComments();
 
 window.deleteComment=async function(id,password){
 
-if(input === null) return;
-
 const input=prompt("비밀번호 입력");
+
+if(input === null) return;
 
 if(input!==password){
 alert("비밀번호 틀림");
