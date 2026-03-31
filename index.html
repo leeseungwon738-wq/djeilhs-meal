@@ -2,16 +2,12 @@
 <head>
 <meta charset="utf-8">
 <title>대전제일고 급식 조회</title><style>
+
 body{
 font-family: Arial;
 max-width:700px;
 margin:auto;
 padding:20px;
-}
-
-input,button,textarea{
-padding:8px;
-margin:5px;
 }
 
 textarea{
@@ -26,19 +22,15 @@ margin-top:10px;
 border-radius:8px;
 }
 
-.comment-header{
-font-weight:bold;
-margin-bottom:5px;
-}
-
-.comment-actions{
-margin-top:5px;
-}
 </style></head><body><h1>대전제일고 급식 조회</h1><input type="text" id="date" placeholder="YYYYMMDD 입력">
 <button onclick="getMeal()">조회</button><pre id="result"></pre><hr><h2>댓글</h2><button onclick="adminLogin()">관리자 로그인</button>
 
-<br><input id="nickname" placeholder="닉네임">
-<input id="password" type="password" placeholder="비밀번호"><br><textarea id="commentText" placeholder="댓글 입력"></textarea><br><button onclick="addComment()">댓글 작성</button>
+<br><br>
+
+<input id="nickname" placeholder="닉네임">
+<input id="password" type="password" placeholder="비밀번호"><br><br>
+
+<textarea id="commentText" placeholder="댓글 입력"></textarea><br><button onclick="addComment()">댓글 작성</button>
 
 <div id="comments"></div><script type="module">
 
@@ -64,8 +56,7 @@ authDomain: "djeilhs-meal.firebaseapp.com",
 projectId: "djeilhs-meal",
 storageBucket: "djeilhs-meal.firebasestorage.app",
 messagingSenderId: "889116854840",
-appId: "1:889116854840:web:8771bce70e411d184674cd",
-measurementId: "G-68GBVD65LV"
+appId: "1:889116854840:web:8771bce70e411d184674cd"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -145,15 +136,8 @@ div.className="comment";
 
 div.innerHTML=
 `
-<div class="comment-header">
-${data.nickname} (${timeText})
-</div>
-
-<div>
-${data.text}
-</div>
-
-<div class="comment-actions">
+<b>${data.nickname}</b> (${timeText})<br>
+${data.text}<br><br>
 
 👍 ${data.likes}
 <button onclick="likeComment('${docSnap.id}','like')">좋아요</button>
@@ -166,8 +150,6 @@ ${data.text}
 </button>
 
 ${isAdmin?`<button onclick="adminDelete('${docSnap.id}')">관리자삭제</button>`:""}
-
-</div>
 `;
 
 commentsDiv.appendChild(div);
@@ -254,36 +236,40 @@ loadComments();
 
 function getMeal(){
 
-const date=document.getElementById("date").value;
+const date = document.getElementById("date").value;
 
-const API_KEY="7a02b3d9429841e9bccb61a0f51b7a16";
-const ATPT_OFCDC_SC_CODE="G10";
-const SD_SCHUL_CODE="7430242";
+const API_KEY = "7a02b3d9429841e9bccb61a0f51b7a16";
+const ATPT_OFCDC_SC_CODE = "G10";
+const SD_SCHUL_CODE = "7430242";
 
-const url=`https://open.neis.go.kr/hub/mealServiceDietInfo?KEY=${API_KEY}&Type=json&ATPT_OFCDC_SC_CODE=${ATPT_OFCDC_SC_CODE}&SD_SCHUL_CODE=${SD_SCHUL_CODE}&MLSV_YMD=${date}`;
+const url =
+`https://open.neis.go.kr/hub/mealServiceDietInfo?KEY=${API_KEY}&Type=json&ATPT_OFCDC_SC_CODE=${ATPT_OFCDC_SC_CODE}&SD_SCHUL_CODE=${SD_SCHUL_CODE}&MLSV_YMD=${date}`;
 
 fetch(url)
-.then(res=>res.json())
-.then(data=>{
+.then(res => res.json())
+.then(data => {
 
 try{
 
-let meal=data.mealServiceDietInfo[1].row[0].DDISH_NM;
-meal=meal.replace(/<br\/>/g,"\n");
+let meal = data.mealServiceDietInfo[1].row[0].DDISH_NM;
 
-document.getElementById("result").textContent=
-date+" 급식 메뉴\n\n"+meal;
+meal = meal.replace(/<br\/>/g,"\n");
+
+document.getElementById("result").textContent =
+date + " 급식 메뉴\n\n" + meal;
 
 }catch{
 
-document.getElementById("result").textContent="급식 정보 없음";
+document.getElementById("result").textContent =
+"해당 날짜의 급식 정보가 없습니다.";
 
 }
 
 })
 .catch(()=>{
-document.getElementById("result").textContent="API 오류";
-});
+document.getElementById("result").textContent =
+"API 요청 실패";
+})
 
 }
 
