@@ -31,7 +31,7 @@ border-radius:8px;
 <button onclick="getMeal()">조회</button><pre id="result"></pre><hr><h2>댓글</h2><input id="nickname" placeholder="닉네임">
 <input id="password" type="password" placeholder="비밀번호"><br><br>
 
-<textarea id="commentText" placeholder="댓글 입력"></textarea><br><button onclick="addComment()">댓글 작성</button>
+<textarea id="commentText" placeholder="댓글 입력"></textarea><br><button type="button" onclick="addComment()">댓글 작성</button>
 
 <div id="comments"></div><script type="module">
 
@@ -131,16 +131,14 @@ div.innerHTML=
 ${data.text}<br><br>
 
  ${data.likes}
-<button onclick="likeComment('${docSnap.id}','like')">좋아요</button>
+<button type="button" onclick="likeComment('${docSnap.id}','like')">좋아요</button>
 
  ${data.dislikes}
-<button onclick="likeComment('${docSnap.id}','dislike')">싫어요</button>
+<button type="button" onclick="likeComment('${docSnap.id}','dislike')">싫어요</button>
 
-<button onclick="deleteComment('${docSnap.id}','${data.password}')">
-삭제
-</button>
+<button type="button" onclick="deleteComment('${docSnap.id}','${data.password}')">삭제</button>
 
-${isAdmin?`<button onclick="adminDelete('${docSnap.id}')">관리자삭제</button>`:""}
+${isAdmin?`<button type="button" onclick="adminDelete('${docSnap.id}')">관리자삭제</button>
 `;
 
 commentsDiv.appendChild(div);
