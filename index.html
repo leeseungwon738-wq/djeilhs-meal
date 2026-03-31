@@ -10,6 +10,11 @@ margin:auto;
 padding:20px;
 }
 
+input,button,textarea{
+font-size:16px;
+margin-top:5px;
+}
+
 textarea{
 width:100%;
 height:70px;
@@ -23,11 +28,7 @@ border-radius:8px;
 }
 
 </style></head><body><h1>대전제일고 급식 조회</h1><input type="text" id="date" placeholder="YYYYMMDD 입력">
-<button onclick="getMeal()">조회</button><pre id="result"></pre><hr><h2>댓글</h2><button onclick="adminLogin()">관리자 로그인</button>
-
-<br><br>
-
-<input id="nickname" placeholder="닉네임">
+<button onclick="getMeal()">조회</button><pre id="result"></pre><hr><h2>댓글</h2><input id="nickname" placeholder="닉네임">
 <input id="password" type="password" placeholder="비밀번호"><br><br>
 
 <textarea id="commentText" placeholder="댓글 입력"></textarea><br><button onclick="addComment()">댓글 작성</button>
@@ -64,19 +65,7 @@ const db = getFirestore(app);
 
 let isAdmin=false;
 
-window.adminLogin=function(){
 
-const pw=prompt("관리자 비밀번호");
-
-if(pw==="solee@RAUL@738"){
-isAdmin=true;
-alert("관리자 로그인 성공");
-loadComments();
-}else{
-alert("비밀번호 틀림");
-}
-
-}
 
 window.addComment=async function(){
 
@@ -102,6 +91,8 @@ document.getElementById("commentText").value="";
 loadComments();
 
 }
+
+
 
 async function loadComments(){
 
@@ -139,10 +130,10 @@ div.innerHTML=
 <b>${data.nickname}</b> (${timeText})<br>
 ${data.text}<br><br>
 
-👍 ${data.likes}
+ ${data.likes}
 <button onclick="likeComment('${docSnap.id}','like')">좋아요</button>
 
-👎 ${data.dislikes}
+ ${data.dislikes}
 <button onclick="likeComment('${docSnap.id}','dislike')">싫어요</button>
 
 <button onclick="deleteComment('${docSnap.id}','${data.password}')">
@@ -157,6 +148,8 @@ commentsDiv.appendChild(div);
 });
 
 }
+
+
 
 window.likeComment=async function(id,type){
 
@@ -204,6 +197,8 @@ loadComments();
 
 }
 
+
+
 window.deleteComment=async function(id,password){
 
 const input=prompt("비밀번호 입력");
@@ -218,6 +213,8 @@ loadComments();
 
 }
 
+
+
 window.adminDelete=async function(id){
 
 if(!isAdmin){
@@ -230,6 +227,28 @@ loadComments();
 
 }
 
+
+
+document.addEventListener("keydown", function(e){
+
+if(e.ctrlKey && e.shiftKey && e.key === "A"){
+
+const pw = prompt("관리자 비밀번호 입력");
+
+if(pw === "solee@RAUL@738"){
+isAdmin = true;
+alert("관리자 로그인 성공");
+loadComments();
+}else{
+alert("비밀번호 틀림");
+}
+
+}
+
+});
+
+
+
 loadComments();
 
 </script><script>
@@ -238,12 +257,28 @@ function getMeal(){
 
 const date = document.getElementById("date").value;
 
+
+
+if(!/^\d{8}$/.test(date)){
+
+alert("날짜는 YYYYMMDD 형식의 8자리로 입력하세요.");
+
+return;
+
+}
+
+
+
 const API_KEY = "7a02b3d9429841e9bccb61a0f51b7a16";
 const ATPT_OFCDC_SC_CODE = "G10";
 const SD_SCHUL_CODE = "7430242";
 
+
+
 const url =
 `https://open.neis.go.kr/hub/mealServiceDietInfo?KEY=${API_KEY}&Type=json&ATPT_OFCDC_SC_CODE=${ATPT_OFCDC_SC_CODE}&SD_SCHUL_CODE=${SD_SCHUL_CODE}&MLSV_YMD=${date}`;
+
+
 
 fetch(url)
 .then(res => res.json())
@@ -272,6 +307,8 @@ document.getElementById("result").textContent =
 })
 
 }
+
+
 
 window.onload=function(){
 
