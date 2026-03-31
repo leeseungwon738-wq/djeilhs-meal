@@ -3,6 +3,27 @@
 <head>
 <meta charset="utf-8">
 <title>대전제일고 급식 조회</title>
+
+<style>
+body{
+font-family: Arial;
+max-width:700px;
+margin:auto;
+}
+
+input,button{
+padding:8px;
+margin:5px;
+}
+
+.comment{
+border:1px solid #ccc;
+padding:10px;
+margin-top:10px;
+}
+
+</style>
+
 </head>
 
 <body>
@@ -14,18 +35,146 @@
 
 <pre id="result"></pre>
 
+<hr>
+
+<h2>댓글</h2>
+
+<input id="nickname" placeholder="닉네임">
+<input id="password" type="password" placeholder="비밀번호">
+<br>
+<textarea id="commentText" placeholder="댓글 입력"></textarea>
+<br>
+<button onclick="addComment()">댓글 작성</button>
+
+<div id="comments"></div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey: "AIzaSyD6D1N0JTqx1AFkHHZSjZTg4u1-J4bmgvE",
+authDomain: "djeilhs-meal.firebaseapp.com",
+projectId: "djeilhs-meal",
+storageBucket: "djeilhs-meal.firebasestorage.app",
+messagingSenderId: "889116854840",
+appId: "1:889116854840:web:8771bce70e411d184674cd",
+measurementId: "G-68GBVD65LV"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+window.addComment = async function(){
+
+const nickname=document.getElementById("nickname").value;
+const password=document.getElementById("password").value;
+const text=document.getElementById("commentText").value;
+
+if(!nickname||!password||!text){
+alert("모든 칸을 입력하세요");
+return;
+}
+
+await addDoc(collection(db,"comments"),{
+nickname:nickname,
+password:password,
+text:text,
+likes:0,
+dislikes:0
+});
+
+document.getElementById("commentText").value="";
+loadComments();
+
+}
+
+async function loadComments(){
+
+const commentsDiv=document.getElementById("comments");
+commentsDiv.innerHTML="";
+
+const querySnapshot=await getDocs(collection(db,"comments"));
+
+querySnapshot.forEach((docSnap)=>{
+
+const data=docSnap.data();
+
+const div=document.createElement("div");
+div.className="comment";
+
+div.innerHTML=
+`
+<b>${data.nickname}</b><br>
+${data.text}<br><br>
+
+👍 ${data.likes}
+<button onclick="likeComment('${docSnap.id}','like')">좋아요</button>
+
+👎 ${data.dislikes}
+<button onclick="likeComment('${docSnap.id}','dislike')">싫어요</button>
+
+<button onclick="deleteComment('${docSnap.id}','${data.password}')">
+삭제
+</button>
+`;
+
+commentsDiv.appendChild(div);
+
+});
+
+}
+
+window.likeComment = async function(id,type){
+
+const ref=doc(db,"comments",id);
+const snapshot=await getDocs(collection(db,"comments"));
+
+for(const d of snapshot.docs){
+if(d.id===id){
+
+let data=d.data();
+
+if(type==="like"){
+data.likes+=1;
+}else{
+data.dislikes+=1;
+}
+
+await updateDoc(ref,data);
+loadComments();
+
+}
+
+}
+
+}
+
+window.deleteComment = async function(id,password){
+
+const input=prompt("비밀번호 입력");
+
+if(input!==password){
+alert("비밀번호가 틀렸습니다");
+return;
+}
+
+await deleteDoc(doc(db,"comments",id));
+loadComments();
+
+}
+
+loadComments();
+
+</script>
+
 <script>
 
 function getMeal(){
 
 const date = document.getElementById("date").value;
 
-if(!/^\d{8}$/.test(date)){
-document.getElementById("result").textContent =
-"날짜는 YYYY(년)MM(월)DD(일) 형식으로 입력해야 합니다.";
-return;
-}
-  
 const API_KEY = "7a02b3d9429841e9bccb61a0f51b7a16";
 const ATPT_OFCDC_SC_CODE = "G10";
 const SD_SCHUL_CODE = "7430242";
