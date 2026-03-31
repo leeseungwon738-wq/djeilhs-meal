@@ -1,11 +1,7 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html><html>
 <head>
 <meta charset="utf-8">
-<title>대전제일고 급식 조회</title>
-
-<style>
-
+<title>대전제일고 급식 조회</title><style>
 body{
 font-family: Arial;
 max-width:700px;
@@ -38,38 +34,13 @@ margin-bottom:5px;
 .comment-actions{
 margin-top:5px;
 }
+</style></head><body><h1>대전제일고 급식 조회</h1><input type="text" id="date" placeholder="YYYYMMDD 입력">
+<button onclick="getMeal()">조회</button><pre id="result"></pre><hr><h2>댓글</h2><button onclick="adminLogin()">관리자 로그인</button>
 
-</style>
+<br><input id="nickname" placeholder="닉네임">
+<input id="password" type="password" placeholder="비밀번호"><br><textarea id="commentText" placeholder="댓글 입력"></textarea><br><button onclick="addComment()">댓글 작성</button>
 
-</head>
-
-<body>
-
-<h1>대전제일고 급식 조회</h1>
-
-<input type="text" id="date" placeholder="YYYYMMDD 입력">
-<button onclick="getMeal()">조회</button>
-
-<pre id="result"></pre>
-
-<hr>
-
-<h2>댓글</h2>
-
-<input id="nickname" placeholder="닉네임">
-<input id="password" type="password" placeholder="비밀번호">
-
-<br>
-
-<textarea id="commentText" placeholder="댓글 입력"></textarea>
-
-<br>
-
-<button onclick="addComment()">댓글 작성</button>
-
-<div id="comments"></div>
-
-<script type="module">
+<div id="comments"></div><script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 
@@ -77,11 +48,10 @@ import {
 getFirestore,
 collection,
 addDoc,
-getDocs,
 deleteDoc,
 doc,
 updateDoc,
-serverTimestamp
+serverTimestamp,
 query,
 orderBy,
 getDocs
@@ -89,7 +59,6 @@ getDocs
 from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
-
 apiKey: "AIzaSyD6D1N0JTqx1AFkHHZSjZTg4u1-J4bmgvE",
 authDomain: "djeilhs-meal.firebaseapp.com",
 projectId: "djeilhs-meal",
@@ -97,51 +66,59 @@ storageBucket: "djeilhs-meal.firebasestorage.app",
 messagingSenderId: "889116854840",
 appId: "1:889116854840:web:8771bce70e411d184674cd",
 measurementId: "G-68GBVD65LV"
-
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+let isAdmin=false;
 
-window.addComment = async function(){
+window.adminLogin=function(){
+
+const pw=prompt("관리자 비밀번호");
+
+if(pw==="solee@RAUL@738"){
+isAdmin=true;
+alert("관리자 로그인 성공");
+loadComments();
+}else{
+alert("비밀번호 틀림");
+}
+
+}
+
+window.addComment=async function(){
 
 const nickname=document.getElementById("nickname").value;
 const password=document.getElementById("password").value;
 const text=document.getElementById("commentText").value;
 
 if(!nickname||!password||!text){
-
-alert("모든 칸을 입력하세요");
+alert("모든 칸 입력");
 return;
-
 }
 
 await addDoc(collection(db,"comments"),{
-
 nickname:nickname,
 password:password,
 text:text,
 likes:0,
 dislikes:0,
 time:serverTimestamp()
-
 });
 
 document.getElementById("commentText").value="";
-
 loadComments();
 
 }
 
-
 async function loadComments(){
 
 const commentsDiv=document.getElementById("comments");
-
 commentsDiv.innerHTML="";
 
-const querySnapshot=await getDocs(collection(db,"comments"));
+const q=query(collection(db,"comments"),orderBy("time","desc"));
+const querySnapshot=await getDocs(q);
 
 querySnapshot.forEach((docSnap)=>{
 
@@ -164,11 +141,9 @@ timeText=`${y}-${m}-${d} ${h}:${min}`;
 }
 
 const div=document.createElement("div");
-
 div.className="comment";
 
 div.innerHTML=
-
 `
 <div class="comment-header">
 ${data.nickname} (${timeText})
@@ -190,6 +165,8 @@ ${data.text}
 삭제
 </button>
 
+${isAdmin?`<button onclick="adminDelete('${docSnap.id}')">관리자삭제</button>`:""}
+
 </div>
 `;
 
@@ -199,9 +176,7 @@ commentsDiv.appendChild(div);
 
 }
 
-
-
-window.likeComment = async function(id,type){
+window.likeComment=async function(id,type){
 
 const ref=doc(db,"comments",id);
 
@@ -217,28 +192,26 @@ let data=d.data();
 
 if(selected===type){
 
-if(type==="like") data.likes-=1;
-if(type==="dislike") data.dislikes-=1;
+if(type==="like")data.likes-=1;
+if(type==="dislike")data.dislikes-=1;
 
 localStorage.removeItem("vote_"+id);
 
 }else{
 
-if(selected==="like") data.likes-=1;
-if(selected==="dislike") data.dislikes-=1;
+if(selected==="like")data.likes-=1;
+if(selected==="dislike")data.dislikes-=1;
 
-if(type==="like") data.likes+=1;
-if(type==="dislike") data.dislikes+=1;
+if(type==="like")data.likes+=1;
+if(type==="dislike")data.dislikes+=1;
 
 localStorage.setItem("vote_"+id,type);
 
 }
 
 await updateDoc(ref,{
-
 likes:data.likes,
 dislikes:data.dislikes
-
 });
 
 loadComments();
@@ -249,84 +222,86 @@ loadComments();
 
 }
 
-
-
-window.deleteComment = async function(id,password){
+window.deleteComment=async function(id,password){
 
 const input=prompt("비밀번호 입력");
 
 if(input!==password){
-
-alert("비밀번호가 틀렸습니다");
+alert("비밀번호 틀림");
 return;
-
 }
 
 await deleteDoc(doc(db,"comments",id));
-
 loadComments();
 
 }
 
+window.adminDelete=async function(id){
+
+if(!isAdmin){
+alert("관리자만 가능");
+return;
+}
+
+await deleteDoc(doc(db,"comments",id));
+loadComments();
+
+}
 
 loadComments();
 
-</script>
-
-
-<script>
+</script><script>
 
 function getMeal(){
 
 const date=document.getElementById("date").value;
 
 const API_KEY="7a02b3d9429841e9bccb61a0f51b7a16";
-
 const ATPT_OFCDC_SC_CODE="G10";
-
 const SD_SCHUL_CODE="7430242";
 
-const url=
-
-`https://open.neis.go.kr/hub/mealServiceDietInfo?KEY=${API_KEY}&Type=json&ATPT_OFCDC_SC_CODE=${ATPT_OFCDC_SC_CODE}&SD_SCHUL_CODE=${SD_SCHUL_CODE}&MLSV_YMD=${date}`;
+const url=`https://open.neis.go.kr/hub/mealServiceDietInfo?KEY=${API_KEY}&Type=json&ATPT_OFCDC_SC_CODE=${ATPT_OFCDC_SC_CODE}&SD_SCHUL_CODE=${SD_SCHUL_CODE}&MLSV_YMD=${date}`;
 
 fetch(url)
-
 .then(res=>res.json())
-
 .then(data=>{
 
 try{
 
 let meal=data.mealServiceDietInfo[1].row[0].DDISH_NM;
-
 meal=meal.replace(/<br\/>/g,"\n");
 
 document.getElementById("result").textContent=
-
 date+" 급식 메뉴\n\n"+meal;
 
 }catch{
 
-document.getElementById("result").textContent=
-
-"해당 날짜의 급식 정보가 없습니다.";
+document.getElementById("result").textContent="급식 정보 없음";
 
 }
 
 })
-
 .catch(()=>{
-
-document.getElementById("result").textContent=
-
-"API 요청 실패";
-
+document.getElementById("result").textContent="API 오류";
 });
 
 }
 
-</script>
+window.onload=function(){
 
-</body>
+const today=new Date();
+
+const y=today.getFullYear();
+const m=String(today.getMonth()+1).padStart(2,"0");
+const d=String(today.getDate()).padStart(2,"0");
+
+const date=y+m+d;
+
+document.getElementById("date").value=date;
+
+getMeal();
+
+}
+
+</script></body>
 </html>
