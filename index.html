@@ -153,6 +153,8 @@ commentsDiv.appendChild(div);
 
 window.likeComment=async function(id,type){
 
+const scrollY = window.scrollY;
+
 const ref=doc(db,"comments",id);
 
 const snapshot=await getDocs(collection(db,"comments"));
@@ -190,6 +192,8 @@ dislikes:data.dislikes
 });
 
 loadComments();
+
+window.scrollTo(0, scrollY);
 
 }
 
