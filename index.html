@@ -27,7 +27,7 @@ margin-top:10px;
 border-radius:8px;
 }
 
-</style></head><body><h1>대전제일고 급식 조회</h1><input type="text" id="date" placeholder="YYYYMMDD 입력">
+</style></head><body><h1>대전제일고 급식 조회</h1><input type="text" id="date" placeholder="YYYY(년)MM(월)DD(일) 입력">
 <button onclick="getMeal()">조회</button><pre id="result"></pre><hr><h2>댓글</h2><input id="nickname" placeholder="닉네임">
 <input id="password" type="password" placeholder="비밀번호"><br><br>
 
@@ -206,7 +206,7 @@ const input=prompt("비밀번호 입력");
 if(input === null) return;
 
 if(input!==password){
-alert("비밀번호 틀림");
+alert("비밀번호가 일치하지 않습니다.");
 return;
 }
 
@@ -244,7 +244,7 @@ isAdmin = true;
 alert("관리자 로그인 성공");
 loadComments();
 }else{
-alert("비밀번호 틀림");
+alert("비밀번호가 일치하지 않습니다");
 }
 
 }
