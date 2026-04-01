@@ -99,12 +99,21 @@ async function loadComments(){
 const commentsDiv=document.getElementById("comments");
 commentsDiv.innerHTML="";
 
-const q=query(collection(db,"comments"),orderBy("time","desc"));
+const q=query(
+collection(db,"comments"),
+orderBy("pinned","desc"),
+orderBy("time","desc")
+);
 const querySnapshot=await getDocs(q);
 
 querySnapshot.forEach((docSnap)=>{
 
 const data=docSnap.data();
+ let pinMark="";
+
+if(data.pinned===true){
+pinMark="🔹  ";
+}
 
 let timeText="";
 
@@ -127,7 +136,7 @@ div.className="comment";
 
 div.innerHTML=
 `
-<b>${data.nickname}</b> (${timeText})<br>
+<b>${pinMark}${data.nickname}</b> (${timeText})<br>
 ${data.text}<br><br>
 
  ${data.likes}
